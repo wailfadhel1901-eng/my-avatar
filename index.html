@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>شخصيتي</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+margin-top:40px;
+background:#f5f5f5;
+}
+
+img{
+width:250px;
+border-radius:20px;
+transition:0.1s;
+}
+
+.talking{
+transform:scale(1.08);
+}
+
+button{
+padding:15px 25px;
+font-size:18px;
+margin-top:20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>شخصيتي المتحركة</h1>
+
+<img id="avatar" src="avatar.png">
+
+<br>
+
+<button onclick="startMic()">
+ابدأ التحدث
+</button>
+
+<script>
+
+function startMic(){
+
+navigator.mediaDevices.getUserMedia({audio:true})
+.then(stream=>{
+
+const audioContext=new AudioContext();
+
+const source=audioContext.createMediaStreamSource(stream);
+
+const analyser=audioContext.createAnalyser();
+
+source.connect(analyser);
+
+const data=new Uint8Array(analyser.frequencyBinCount);
+
+const avatar=document.getElementById("avatar");
+
+function loop(){
+
+analyser.getByteFrequencyData(data);
+
+let volume=data.reduce((a,b)=>a+b)/data.length;
+
+if(volume>10){
+avatar.classList.add("talking");
+}else{
+avatar.classList.remove("talking");
+}
+
+requestAnimationFrame(loop);
+}
+
+loop();
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
